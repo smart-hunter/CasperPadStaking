@@ -1,4 +1,4 @@
-# CSPD-Vesting-Contract
+# CSPD-Staking-Contract
 
 ## Install
     yarn install
