@@ -833,7 +833,7 @@ contract MasterChef is Ownable {
         uint256 unStakeFee = _amount.mul(feePercent).div(100);
         uint256 amount = _amount.sub(unStakeFee);
         cspdToken.safeTransfer(msg.sender, amount);
-        cspdToken.safeTransfer(msg.sender, unStakeFee);
+        cspdToken.safeTransfer(feeWallet, unStakeFee);
         totalStakedAmount = totalStakedAmount.sub(_amount);
         emit UnStake(msg.sender, amount, unStakeFee);
     }
