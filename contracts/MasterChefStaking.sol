@@ -879,11 +879,13 @@ contract MasterChef is Ownable {
                 amount = cspdToken.balanceOf(address(this));
             }
 
+            cspdToken.safeTransfer(msg.sender, amount);
+
             if (cspdToken.balanceOf(address(this)) < _harvestFee) {
                 _harvestFee = cspdToken.balanceOf(address(this));
             }
 
-            cspdToken.safeTransfer(msg.sender, amount);
+
             cspdToken.safeTransfer(feeWallet, _harvestFee);
             emit Harvest(msg.sender, amount, _harvestFee);
 
