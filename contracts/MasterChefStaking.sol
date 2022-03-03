@@ -798,12 +798,22 @@ contract MasterChef is Ownable {
         }
         uint256 multiplier = getMultiplier(lastRewardBlock, block.number);
         uint256 reward = multiplier.mul(rewardPerBlock);
-        _rewardBalance = _rewardBalance.sub(reward);
-        accCSPDPerShare = accCSPDPerShare.add(reward.mul(1e12).div(totalStakedAmount));
+        if (_rewardBalance == 0) {
+            lastRewardBlock = block.number;
+            return;
+        }
+        if (_rewardBalance < reward) {
+            accCSPDPerShare = accCSPDPerShare.add(_rewardBalance.mul(1e12).div(totalStakedAmount));
+            _rewardBalance = 0;
+        } else {
+            _rewardBalance = _rewardBalance.sub(reward);
+            accCSPDPerShare = accCSPDPerShare.add(reward.mul(1e12).div(totalStakedAmount));
+        }
         lastRewardBlock = block.number;
     }
 
     function stake(uint256 _amount) public {
+        require(_rewardBalance > 0, "rewardBalance is 0");
         UserInfo storage user = userInfo[msg.sender];
         updateStatus();
         if (user.amount > 0) {
@@ -852,6 +862,7 @@ contract MasterChef is Ownable {
         uint256 rewardAmount = _getPending(msg.sender);
         
         if (reStake) {
+            require(_rewardBalance > 0, "rewardBalance is 0");
             UserInfo storage user = userInfo[msg.sender];
             totalStakedAmount = totalStakedAmount.sub(user.amount);
             updateStatus();
