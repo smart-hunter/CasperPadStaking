@@ -763,9 +763,12 @@ contract MasterChef is Ownable {
     function _getPending(address _user) private view returns (uint256) {
         UserInfo storage user = userInfo[_user];
         uint256 acc = accCSPDPerShare;
-        if (block.number > lastRewardBlock && totalStakedAmount != 0) {
+        if (block.number > lastRewardBlock && totalStakedAmount != 0 && _rewardBalance > 0) {
             uint256 multiplier = getMultiplier(lastRewardBlock, block.number);
             uint256 reward = multiplier.mul(rewardPerBlock);
+            if (_rewardBalance < reward) {
+                acc = acc.add(_rewardBalance.mul(1e12).div(totalStakedAmount));
+            }
             acc = acc.add(reward.mul(1e12).div(totalStakedAmount));
         }
         return user.amount.mul(acc).div(1e12).sub(user.rewardDebt).add(user.pendingAmount);
