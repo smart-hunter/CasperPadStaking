@@ -644,7 +644,6 @@ contract MasterChef is Ownable {
 
     uint256 private _rewardBalance;
 
-
     // Info of each user that stakes LP tokens.
     mapping (address => UserInfo) public userInfo;
 
@@ -768,8 +767,9 @@ contract MasterChef is Ownable {
             uint256 reward = multiplier.mul(rewardPerBlock);
             if (_rewardBalance < reward) {
                 acc = acc.add(_rewardBalance.mul(1e12).div(totalStakedAmount));
+            } else {
+                acc = acc.add(reward.mul(1e12).div(totalStakedAmount));
             }
-            acc = acc.add(reward.mul(1e12).div(totalStakedAmount));
         }
         return user.amount.mul(acc).div(1e12).sub(user.rewardDebt).add(user.pendingAmount);
     }
